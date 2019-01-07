@@ -61,6 +61,8 @@ class ResourceFilter extends DataObject
     public function getCMSFields()
     {
         $this->beforeUpdateCMSFields(function (FieldList $fields) {
+            $fields->removeByName('FilterFields');
+
             $allColumnsField = $fields->dataFieldByName('AllColumns');
             $allColumnsField->addExtraClass('ckan-columns__all-columns');
             // See https://github.com/silverstripe/silverstripe-framework/issues/8696
@@ -81,13 +83,13 @@ class ResourceFilter extends DataObject
             $columnSources
                 ->setTitle(_t(__CLASS__ . '.COLUMNS_SOURCES', 'Columns source(s)'))
                 ->addExtraClass('ckan-columns__sources');
-            $fields->push($columnSources);
+            $fields->addFieldToTab('Root.Main', $columnSources);
 
             // See https://github.com/silverstripe/silverstripe-framework/issues/8696
             $filterLabel = $fields->dataFieldByName('FilterLabel');
             $filterLabel->setTitle(ucfirst(strtolower($filterLabel->Title())));
 
-            $fields->removeByName('FilterForID');
+            $fields->removeByName(['FilterForID', 'Order']);
         });
 
         return parent::getCMSFields();

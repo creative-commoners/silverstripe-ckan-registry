@@ -1,0 +1,30 @@
+.ckan-registry__data-loader {
+  position: relative;
+  display: inline-block;
+}
+
+.ckan-registry__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+
+  &-vignette {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background: grey;
+    opacity: 0.5;
+    font-size: 2em;
+  }
+
+  &-notice {
+    position: relative;
+  }
+}

@@ -5,6 +5,7 @@ import Griddle from 'griddle-react';
 import classnames from 'classnames';
 import CKANApi from 'lib/CKANApi';
 import { Link } from 'react-router-dom';
+import ReactLoading from 'react-loading';
 
 class CKANRegistryDisplay extends Component {
   constructor(props) {
@@ -31,16 +32,19 @@ class CKANRegistryDisplay extends Component {
   }
 
   getGriddleProps() {
-    const { pageSize } = this.props;
-    const { data, currentPage, recordCount } = this.state;
-
+    const { pageSize, LoadingIndicator } = this.props;
+    const { data, currentPage, recordCount, loading } = this.state;
+    const loadingIndicator = this.renderLoading;
     const GriddleLayout = ({ Table, Pagination, Filter }) => (
       <div>
         <div className="ckan-registry__filters">
           <Filter />
         </div>
-        <div className="ckan-registry__table">
-          <Table />
+        <div className="ckan-registry__data">
+          <div className="ckan-registry__data-loader">
+            <Table />
+            { loading && loadingIndicator(LoadingIndicator) }
+          </div>
         </div>
         <div className="ckan-registry__pagination">
           <Pagination />
@@ -59,6 +63,7 @@ class CKANRegistryDisplay extends Component {
         onGetPage: this.handleGetPage,
         onNext: () => { this.handleGetPage(this.state.currentPage + 1); },
         onPrevious: () => { this.handleGetPage(this.state.currentPage - 1); },
+        onSort: (...args) => console.log(args),
       },
       components: {
         Layout: GriddleLayout,
@@ -113,16 +118,15 @@ class CKANRegistryDisplay extends Component {
    *
    * @returns {HTMLElement|null}
    */
-  renderLoading() {
-    const { loading } = this.state;
-    if (!loading) {
-      return null;
-    }
-
+  renderLoading(LoadingIndicator) {
     return (
-      <p className="ckan-registry__loading">
-        { window.i18n._t('CKANRegistryDisplay.LOADING', 'Loading...') }
-      </p>
+      <div className="ckan-registry__loading">
+        <div className="ckan-registry__loading-vignette" />
+        <div className="ckan-registry__loading-notice">
+          <p>{ window.i18n._t('CKANRegistryDisplay.LOADING', 'Loading...') }</p>
+          {LoadingIndicator}
+        </div>
+      </div>
     );
   }
 
@@ -174,7 +178,6 @@ class CKANRegistryDisplay extends Component {
 
     return (
       <div className={classes}>
-        { this.renderLoading() }
         <Griddle {...this.getGriddleProps()} />
         { this.renderDownloadLink() }
 
@@ -190,6 +193,7 @@ CKANRegistryDisplay.propTypes = {
   className: PropTypes.string,
   downloadLink: PropTypes.string,
   pageSize: PropTypes.number,
+  LoadingIndicator: PropTypes.element,
 };
 
 CKANRegistryDisplay.defaultProps = {
@@ -197,6 +201,7 @@ CKANRegistryDisplay.defaultProps = {
   className: '',
   downloadLink: '',
   pageSize: 30,
+  LoadingIndicator: <ReactLoading type="bars" />,
 };
 
 export default CKANRegistryDisplay;
